@@ -15,16 +15,21 @@ package org.jdbi.v3.core.mapper;
 
 import java.lang.reflect.Type;
 import java.util.Optional;
+import org.jdbi.v3.core.Enums;
 import org.jdbi.v3.core.config.ConfigRegistry;
 
 /**
  * Column mapper factory which knows how to map {@link Enum} instances.
+ *
+ * @see org.jdbi.v3.core.Enums
  */
 class EnumMapperFactory implements ColumnMapperFactory {
     private static final EnumByNameMapperFactory BY_NAME = new EnumByNameMapperFactory();
+    private static final EnumByOrdinalMapperFactory BY_ORDINAL = new EnumByOrdinalMapperFactory();
 
     @Override
     public Optional<ColumnMapper<?>> build(Type type, ConfigRegistry config) {
-        return BY_NAME.build(type, config);
+        boolean mapByName = config.get(Enums.class).enumsHandledByName();
+        return (mapByName ? BY_NAME : BY_ORDINAL).build(type, config);
     }
 }

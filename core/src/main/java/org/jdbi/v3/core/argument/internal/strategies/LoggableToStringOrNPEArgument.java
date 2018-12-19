@@ -31,11 +31,6 @@ public class LoggableToStringOrNPEArgument<T> extends AbstractLoggableArgument<T
         this.toString = Object::toString;
     }
 
-    public LoggableToStringOrNPEArgument(T value, Function<T, String> toString) {
-        super(value);
-        this.toString = toString;
-    }
-
     @Override
     public void apply(int position, PreparedStatement statement, StatementContext ctx) throws SQLException {
         statement.setString(position, toString.apply(value));

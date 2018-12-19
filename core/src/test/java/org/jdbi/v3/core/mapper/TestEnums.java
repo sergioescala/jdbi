@@ -14,6 +14,7 @@
 package org.jdbi.v3.core.mapper;
 
 import java.util.List;
+import org.jdbi.v3.core.Enums;
 import org.jdbi.v3.core.Handle;
 import org.jdbi.v3.core.rule.H2DatabaseRule;
 import org.junit.Rule;
@@ -88,6 +89,22 @@ public class TestEnums {
     @Test
     public void testEnumCaseInsensitive() {
         assertThat(dbRule.getSharedHandle().createQuery("select 'BrIaN'").mapTo(SomethingElse.Name.class).findOnly())
+            .isEqualTo(SomethingElse.Name.brian);
+    }
+
+    @Test
+    public void testOrdinal() {
+        Handle h = dbRule.openHandle().configure(Enums.class, Enums::handleEnumsByOrdinal);
+
+        h.createUpdate("insert into something (id, intValue) values (1, :name)")
+            .bind("name", SomethingElse.Name.brian)
+            .execute();
+
+        SomethingElse.Name name = h.createQuery("select intValue from something")
+            .mapTo(SomethingElse.Name.class)
+            .findOnly();
+
+        assertThat(name)
             .isEqualTo(SomethingElse.Name.brian);
     }
 }

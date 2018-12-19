@@ -21,6 +21,8 @@ import static org.jdbi.v3.core.generic.GenericTypes.getErasedType;
 
 /**
  * Produces enum column mappers, which map enums from varchar columns using {@link Enum#valueOf(Class, String)}.
+ *
+ * @see org.jdbi.v3.core.Enums
  */
 public class EnumByNameMapperFactory implements ColumnMapperFactory {
     @Override

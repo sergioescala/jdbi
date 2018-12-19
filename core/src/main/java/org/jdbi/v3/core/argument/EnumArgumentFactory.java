@@ -15,17 +15,22 @@ package org.jdbi.v3.core.argument;
 
 import java.lang.reflect.Type;
 import java.util.Optional;
-import org.jdbi.v3.core.argument.internal.strategies.LoggableToStringOrNPEArgument;
+import org.jdbi.v3.core.Enums;
+import org.jdbi.v3.core.argument.internal.StatementBinder;
+import org.jdbi.v3.core.argument.internal.strategies.LoggableBinderArgument;
 import org.jdbi.v3.core.config.ConfigRegistry;
 
 class EnumArgumentFactory implements ArgumentFactory {
     @Override
     public Optional<Argument> build(Type expectedType, Object rawValue, ConfigRegistry config) {
-        // Enums must be bound as VARCHAR
-        // TODO use the same configuration as EnumMapperFactory for consistency
         if (rawValue instanceof Enum) {
             Enum<?> enumValue = (Enum<?>) rawValue;
-            return Optional.of(new LoggableToStringOrNPEArgument<>(enumValue, Enum::name));
+
+            StatementBinder<Enum<?>> binder = config.get(Enums.class).enumsHandledByName()
+                ? (p, i, v) -> p.setString(i, v.name())
+                : (p, i, v) -> p.setInt(i, v.ordinal());
+
+            return Optional.of(new LoggableBinderArgument<>(enumValue, binder));
         } else {
             return Optional.empty();
         }

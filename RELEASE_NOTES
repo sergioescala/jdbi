@@ -11,6 +11,7 @@
     - ParsedSql can be created with ParsedSql.of(String, ParsedParameters) factory
     - ParsedParameters can be created with ParsedSql.positional(int) and
       ParsedSql.named(List<String>) factories.
+    - Enums config class to change the default policy for binding and mapping Enum values.
   - New beta API
     - Type qualifiers for binding and mapping. Use annotations to distinguish between different SQL
       data types that map to the same Java type. e.g. VARCHAR, NVARCHAR, and Postgres MACADDR all

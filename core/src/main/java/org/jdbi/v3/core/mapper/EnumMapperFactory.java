@@ -23,6 +23,7 @@ import org.jdbi.v3.core.config.ConfigRegistry;
  *
  * @see org.jdbi.v3.core.Enums
  */
+// TODO refactor
 class EnumMapperFactory implements ColumnMapperFactory {
     private static final EnumByNameMapperFactory BY_NAME = new EnumByNameMapperFactory();
     private static final EnumByOrdinalMapperFactory BY_ORDINAL = new EnumByOrdinalMapperFactory();

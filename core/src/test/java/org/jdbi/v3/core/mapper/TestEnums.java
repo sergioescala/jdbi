@@ -96,8 +96,8 @@ public class TestEnums {
     public void testOrdinal() {
         Handle h = dbRule.openHandle().configure(Enums.class, Enums::handleEnumsByOrdinal);
 
-        h.createUpdate("insert into something (id, intValue) values (1, :name)")
-            .bind("name", SomethingElse.Name.brian)
+        h.createUpdate("insert into something (id, intValue) values (1, :ordinal)")
+            .bind("ordinal", SomethingElse.Name.brian.ordinal())
             .execute();
 
         SomethingElse.Name name = h.createQuery("select intValue from something")

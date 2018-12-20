@@ -16,23 +16,29 @@ package org.jdbi.v3.core.argument;
 import java.lang.reflect.Type;
 import java.util.Optional;
 import org.jdbi.v3.core.Enums;
-import org.jdbi.v3.core.argument.internal.StatementBinder;
-import org.jdbi.v3.core.argument.internal.strategies.LoggableBinderArgument;
 import org.jdbi.v3.core.config.ConfigRegistry;
 
 class EnumArgumentFactory implements ArgumentFactory {
     @Override
     public Optional<Argument> build(Type expectedType, Object rawValue, ConfigRegistry config) {
-        if (rawValue instanceof Enum) {
-            Enum<?> enumValue = (Enum<?>) rawValue;
-
-            StatementBinder<Enum<?>> binder = config.get(Enums.class).enumsHandledByName()
-                ? (p, i, v) -> p.setString(i, v.name())
-                : (p, i, v) -> p.setInt(i, v.ordinal());
-
-            return Optional.of(new LoggableBinderArgument<>(enumValue, binder));
-        } else {
+        boolean isEnum = expectedType instanceof Class && ((Class<?>) expectedType).isEnum();
+        if (!isEnum) {
             return Optional.empty();
         }
+
+        boolean byName = config.get(Enums.class).enumsHandledByName();
+        Arguments arguments = config.get(Arguments.class);
+
+        if (rawValue == null) {
+            return byName
+                ? arguments.findFor(String.class, null)
+                : arguments.findFor(Integer.class, null);
+        }
+
+        Enum<?> enumValue = (Enum<?>) rawValue;
+
+        return byName
+            ? arguments.findFor(String.class, enumValue.name())
+            : arguments.findFor(Integer.class, enumValue.ordinal());
     }
 }
